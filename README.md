@@ -10,7 +10,7 @@ Downloads, installation instructions, and more information can be found on [Curs
 
 ### Setup
 
-Fork this repository, then clone via SSH.
+1. Fork this repository, then clone via SSH.
 
 2. In the root of the repository, run:
 ```
