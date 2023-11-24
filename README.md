@@ -10,15 +10,7 @@ Downloads, installation instructions, and more information can be found on [Curs
 
 ### Setup
 
-Fork this repository, then clone via SSH:
-```
-git clone git@github.com:<you>/EnderMail.git
-```
-
-Or, clone via HTTPS:
-```
-git clone https://github.com/<you>/EnderMail.git
-```
+Fork this repository, then clone via SSH.
 
 2. In the root of the repository, run:
 ```
