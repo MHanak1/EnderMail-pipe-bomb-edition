@@ -9,6 +9,7 @@ import com.google.common.base.Supplier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
+
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -22,6 +23,8 @@ public class EnderMailItems {
 	public static final RegistryObject<Item> PACKAGE_CONTROLLER = register(PackageControllerItem.NAME, () -> new PackageControllerItem());
 	public static final RegistryObject<Item> PACKING_TAPE = register("packing_tape", () -> new Item(new Properties()));
 	public static final RegistryObject<Item> STAMP = register("stamp", () -> new Item(new Properties()));
+	public static final RegistryObject<Item> PIPE_BOMB = register("pipe_bomb", () -> new Item(new Properties().stacksTo(1)));
+	public static final RegistryObject<Item> PIPE_BOMB_ARMED = register("pipe_bomb_armed", () -> new Item(new Properties().stacksTo(1)));
 
 	public static RegistryObject<Item> register(String name, Supplier<Item> init) {
         return ITEM_DEFERRED.register(name, init);

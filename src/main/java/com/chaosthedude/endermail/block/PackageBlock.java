@@ -29,22 +29,20 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -61,6 +59,7 @@ public class PackageBlock extends BaseEntityBlock {
 
 	public static final String NAME = "package";
 
+	int fuse = -1;
 	public static final int INVENTORY_SIZE = 5;
 
 	public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -83,6 +82,8 @@ public class PackageBlock extends BaseEntityBlock {
 		}
 		boolean holdingStamp = ItemUtils.isHolding(player, EnderMailItems.STAMP.get());
 		boolean holdingPackageController = ItemUtils.isHolding(player, EnderMailItems.PACKAGE_CONTROLLER.get());
+		boolean holdingShears = ItemUtils.isHolding(player, Items.SHEARS);
+		System.out.println(holdingShears);
 		if (level.isClientSide() && !isStamped(state) && player.getItemInHand(hand).getItem() == EnderMailItems.STAMP.get()) {
 			ScreenWrapper.openStampScreen(level, player, pos);
 			return InteractionResult.SUCCESS;
@@ -118,13 +119,60 @@ public class PackageBlock extends BaseEntityBlock {
 			} else if (!isStamped(state) && !player.isCrouching() && !holdingStamp) {
 				BlockEntity te = level.getBlockEntity(pos);
 				if (te != null && te instanceof PackageBlockEntity) {
-					NetworkHooks.openScreen((ServerPlayer) player, (PackageBlockEntity) te, pos);
+					PackageBlockEntity blte = (PackageBlockEntity) te;
+					int hasbombs = containsPipeBombs(blte, holdingShears);
+					if(hasbombs	 > 0){
+						Explode(level, pos, 2 + hasbombs);
+					}
+					else if(hasbombs == 0){
+						NetworkHooks.openScreen((ServerPlayer) player, (PackageBlockEntity) te, pos);
+					}
 				}
 				return InteractionResult.SUCCESS;
 			}
 		}
 
 		return InteractionResult.PASS;
+	}
+
+	public  void Explode(Level level, BlockPos pos, int ExplosionSize){
+		int x = pos.getX();
+		int y = pos.getY();
+		int z = pos.getZ();
+		level.destroyBlock(pos, false);
+		for (int cx = x-ExplosionSize; cx <= x+ExplosionSize; cx++){
+			for (int cy = y-ExplosionSize; cy <= y+ExplosionSize; cy++){
+				for (int cz = z-ExplosionSize; cz <= z+ExplosionSize; cz++){
+					if((x-cx)*(x-cx) + (y-cy)*(y-cy) + (z-cz)*(z-cz) <= ExplosionSize*ExplosionSize){
+						BlockPos cpos = new BlockPos(cx, cy, cz);
+						BlockState block = level.getBlockState(cpos);
+						if (block.isCollisionShapeFullBlock(level, pos) && (block.getExplosionResistance(level, pos, (Explosion) null) < 2*ExplosionSize) && !block.hasBlockEntity()) {
+							FallingBlockEntity fallingBlock =  FallingBlockEntity.fall(level, cpos, block);
+						}
+					}
+				}
+			}
+		}
+		level.explode((Entity) null, pos.getX(), pos.getY(), pos.getZ(), ExplosionSize, Level.ExplosionInteraction.TNT);
+	}
+
+	public int containsPipeBombs(PackageBlockEntity container, boolean DisarmBombs){
+		int count = 0;
+		NonNullList<ItemStack> contents = container.getContents();
+		for (int i = 0; i < container.getContainerSize(); i++){
+			if (contents.get(i).getItem() != null){
+				if(contents.get(i).getItem().equals(EnderMailItems.PIPE_BOMB_ARMED.get())){
+					if (DisarmBombs) {
+						contents.set(i, EnderMailItems.PIPE_BOMB.get().getDefaultInstance());
+					}
+					count++;
+				}
+			}
+		}
+		if (DisarmBombs && count != 0){
+			return (-1);
+		}
+		return (count);
 	}
 
 	@Override

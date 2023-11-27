@@ -80,6 +80,8 @@ public class EnderMail {
 		if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
 			event.accept(new ItemStack(EnderMailItems.PACKAGE_CONTROLLER.get()));
 			event.accept(new ItemStack(EnderMailItems.STAMP.get()));
+			event.accept(new ItemStack(EnderMailItems.PIPE_BOMB.get()));
+			event.accept(new ItemStack(EnderMailItems.PIPE_BOMB_ARMED.get()));
 		} else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
 			event.accept(new ItemStack(EnderMailItems.PACKING_TAPE.get()));
 		} else if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {

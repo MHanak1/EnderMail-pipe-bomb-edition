@@ -10,6 +10,8 @@
     "item.endermail.package_controller": "Package Controller",
     "item.endermail.packing_tape": "Packing Tape",
     "item.endermail.stamp": "Stamp",
+    "item.endermail.pipe_bomb": "Pipe Bomb",
+    "item.endermail.pipe_bomb_armed": "Pipe Bomb (Armed)",
 
     "_comment": "STRINGS",
     "string.endermail.cancel": "Cancel",

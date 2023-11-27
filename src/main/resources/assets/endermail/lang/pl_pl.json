@@ -10,6 +10,8 @@
     "item.endermail.package_controller": "Kontroler paczek",
     "item.endermail.packing_tape": "Taśma pakowa",
     "item.endermail.stamp": "Znaczek",
+    "item.endermail.pipe_bomb": "Bomba rurowa",
+    "item.endermail.pipe_bomb_armed": "Bomba rurowa (uzbrojona)",
 
     "_comment": "STRINGS",
     "string.endermail.cancel": "Anuluj",
